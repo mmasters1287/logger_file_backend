@@ -2,4 +2,4 @@
 /deps
 erl_crash.dump
 *.ez
-.elixir_ls/
+.elixir_ls/*
