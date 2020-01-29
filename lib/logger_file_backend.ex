@@ -135,8 +135,19 @@ defmodule LoggerFileBackend do
   end
 
   defp format_event(level, msg, ts, md, %{format: format, metadata: keys} = state) do
-    IO.inspect(event(level, msg, ts, md, state))
-    Logger.Formatter.format(format, level, msg, ts, take_metadata(md, keys))
+    IO.inspect(%{
+      "@timestamp": timestamp(ts, true),
+      level: level,
+      message: to_string(msg),
+      module: md[:module],
+      function: md[:function],
+      line: md[:line]
+    })
+
+    res = Logger.Formatter.format(format, level, msg, ts, take_metadata(md, keys))
+    IO.inspect(res)
+
+    res
   end
 
   @doc false
@@ -236,7 +247,7 @@ defmodule LoggerFileBackend do
   defp prune_binary(<<>>, acc),
     do: acc
 
-  def event(level, msg, ts, md, %{fields: fields, utc_log: utc_log, formatter: formatter}) do
+  def event(level, msg, ts, md, %{fields: fields, utc_log: utc_log}) do
     fields
     |> format_fields(md, %{
       "@timestamp": timestamp(ts, utc_log),
@@ -246,7 +257,6 @@ defmodule LoggerFileBackend do
       function: md[:function],
       line: md[:line]
     })
-    |> formatter.()
   end
 
   def format_fields(fields, metadata, field_overrides) do
