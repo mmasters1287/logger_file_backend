@@ -135,16 +135,19 @@ defmodule LoggerFileBackend do
   end
 
   defp format_event(level, msg, ts, md, %{format: _format, metadata: _keys}) do
-    %{
-      "@timestamp": timestamp(ts),
-      level: level,
-      message: to_string(msg),
-      module: md[:module],
-      function: md[:function],
-      line: md[:line],
-      file: md[:file]
-    }
-    |> Jason.encode!()
+    json =
+      %{
+        "@timestamp": timestamp(ts),
+        level: level,
+        message: to_string(msg),
+        module: md[:module],
+        function: md[:function],
+        line: md[:line],
+        file: md[:file]
+      }
+      |> Jason.encode!()
+
+    "\n" <> json
   end
 
   @doc false
