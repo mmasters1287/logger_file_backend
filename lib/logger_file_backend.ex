@@ -137,8 +137,7 @@ defmodule LoggerFileBackend do
   defp format_event(level, msg, ts, md, %{format: _format, metadata: _keys}) do
     json =
       %{
-        "@timestamp":
-          NaiveDateTime.from_erl!(ts) |> DateTime.from_naive!("Etc/UTC") |> DateTime.to_string(),
+        "@timestamp": datetime(ts),
         level: level,
         message: to_string(msg),
         module: md[:module],
@@ -247,4 +246,9 @@ defmodule LoggerFileBackend do
 
   defp prune_binary(<<>>, acc),
     do: acc
+
+  defp datetime({{year, month, day}, {hour, min, sec, millis}}) do
+    {:ok, ndt} = NaiveDateTime.new(year, month, day, hour, min, sec, {millis * 1000, 3})
+    ndt |> DateTime.from_naive!("Etc/UTC") |> DateTime.to_string()
+  end
 end
