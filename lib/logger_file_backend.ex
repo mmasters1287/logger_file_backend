@@ -134,20 +134,17 @@ defmodule LoggerFileBackend do
     end
   end
 
-  defp format_event(level, msg, ts, md, %{format: format, metadata: keys}) do
-    IO.inspect(%{
+  defp format_event(level, msg, ts, md, %{format: _format, metadata: _keys}) do
+    %{
       "@timestamp": timestamp(ts),
       level: level,
       message: to_string(msg),
       module: md[:module],
       function: md[:function],
-      line: md[:line]
-    })
-
-    res = Logger.Formatter.format(format, level, msg, ts, take_metadata(md, keys))
-    IO.inspect(res)
-
-    res
+      line: md[:line],
+      file: md[:file]
+    }
+    |> Jason.encode()
   end
 
   @doc false
