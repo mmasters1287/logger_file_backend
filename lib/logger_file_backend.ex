@@ -144,7 +144,7 @@ defmodule LoggerFileBackend do
       line: md[:line],
       file: md[:file]
     }
-    |> Jason.encode()
+    |> Jason.encode!()
   end
 
   @doc false
